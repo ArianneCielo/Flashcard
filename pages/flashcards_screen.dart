@@ -78,9 +78,11 @@ class FlashcardsScreenState extends State<FlashcardsScreen> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(0, 0, 0, 1),
       appBar: AppBar(
-        title: Text('English to Korean Flashcards'),
+        title: Text(
+          'English to Korean Flashcards',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
-          titleTextStyle: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
       ),
       body: Center(
         child: Column(

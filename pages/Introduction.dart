@@ -16,9 +16,14 @@ class buildIntroductionState extends State<buildIntroduction> {
       backgroundColor: Color(0xFF000000),
       appBar: AppBar(
         backgroundColor: Colors.pink,
-        title: Text('English to Korean Flashcards', style: TextStyle(color: Color.fromRGBO(0, 0, 0, 1)),),
-        centerTitle: true,
-          titleTextStyle: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+          title: Text(
+            'English to Korean Flashcards',
+            style: TextStyle(
+                color: Color.fromRGBO(0, 0, 0, 1),
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
           ),
           body: Center(
             child: Column(
