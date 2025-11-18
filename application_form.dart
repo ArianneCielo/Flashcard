@@ -1,5 +1,3 @@
-// application_form.dart
-
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -17,9 +15,7 @@ class App extends StatelessWidget {
   }
 }
 
-// ------------------------------------------------------------
-// PERSONAL INFORMATION PAGE
-// ------------------------------------------------------------
+// personal information page
 class PersonalInformationPage extends StatefulWidget {
   const PersonalInformationPage({super.key});
   @override
@@ -146,9 +142,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   ];
 }
 
-// ------------------------------------------------------------
-// EDUCATIONAL BACKGROUND PAGE
-// ------------------------------------------------------------
+// educational background page
 class EducationalBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const EducationalBackgroundPage({super.key, required this.applicationData});
@@ -257,9 +251,7 @@ class _EducationalBackgroundPageState
   }
 }
 
-// ------------------------------------------------------------
-// FAMILY BACKGROUND PAGE
-// ------------------------------------------------------------
+// family background page
 class FamilyBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FamilyBackgroundPage({super.key, required this.applicationData});
@@ -369,9 +361,8 @@ class _FamilyBackgroundPageState extends State<FamilyBackgroundPage> {
   }
 }
 
-// ------------------------------------------------------------
-// FINANCIAL INFORMATION PAGE
-// ------------------------------------------------------------
+// financial information page
+
 class FinancialInformationPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FinancialInformationPage({super.key, required this.applicationData});
@@ -482,9 +473,7 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
   }
 }
 
-// ------------------------------------------------------------
-// ADDITIONAL DOCUMENTS PAGE (UPDATED + FILE PICKER)
-// ------------------------------------------------------------
+// additional documents page
 class AdditionalDocumentsPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const AdditionalDocumentsPage({super.key, required this.applicationData});
@@ -602,7 +591,8 @@ class _AdditionalDocumentsPageState extends State<AdditionalDocumentsPage> {
                       return;
                     }
 
-                    final data = Map.from(widget.applicationData);
+                    final Map<String, dynamic> data =
+                        Map<String, dynamic>.from(widget.applicationData);
                     data["documents"] = uploadedDocs;
 
                     Navigator.push(
@@ -630,9 +620,7 @@ class _AdditionalDocumentsPageState extends State<AdditionalDocumentsPage> {
   }
 }
 
-// ------------------------------------------------------------
-// SUBMIT PAGE
-// ------------------------------------------------------------
+// submit page
 class SubmitPage extends StatelessWidget {
   final Map<String, dynamic> applicationData;
   const SubmitPage({super.key, required this.applicationData});
