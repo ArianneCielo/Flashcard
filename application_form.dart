@@ -15,9 +15,7 @@ class App extends StatelessWidget {
   }
 }
 
-/* ============================================================================
-   1. PERSONAL INFORMATION  (picture 1000032702.png)
-============================================================================ */
+// Personal Information Page
 class PersonalInformationPage extends StatefulWidget {
   const PersonalInformationPage({super.key});
   @override
@@ -157,9 +155,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   ];
 }
 
-/* ============================================================================
-   2. EDUCATIONAL BACKGROUND  (1000032703.png)
-============================================================================ */
+// Educational Background Page
 class EducationalBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const EducationalBackgroundPage({super.key, required this.applicationData});
@@ -267,9 +263,7 @@ class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
   }
 }
 
-/* ============================================================================
-   3. FAMILY BACKGROUND  (1000032704.png)
-============================================================================ */
+// Family Background Page
 class FamilyBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FamilyBackgroundPage({super.key, required this.applicationData});
@@ -380,9 +374,7 @@ class _FamilyBackgroundPageState extends State<FamilyBackgroundPage> {
   }
 }
 
-/* ============================================================================
-   4. FINANCIAL INFORMATION  (1000032705.png)
-============================================================================ */
+// Financial Information Page
 class FinancialInformationPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FinancialInformationPage({super.key, required this.applicationData});
@@ -491,9 +483,7 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
   }
 }
 
-/* ============================================================================
-   5. ADDITIONAL DOCUMENTS  (1000032706.png)
-============================================================================ */
+// Additional Documents Page
 class AdditionalDocumentsPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const AdditionalDocumentsPage({super.key, required this.applicationData});
@@ -579,9 +569,7 @@ class _AdditionalDocumentsPageState extends State<AdditionalDocumentsPage> {
   }
 }
 
-/* ============================================================================
-   6. SUBMIT PAGE  (1000032707.png)
-============================================================================ */
+// Submit Page
 class SubmitPage extends StatelessWidget {
   final Map<String, dynamic> applicationData;
   const SubmitPage({super.key, required this.applicationData});
@@ -618,6 +606,7 @@ class SubmitPage extends StatelessWidget {
               Container(
                 height: 140,
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(.9),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -634,6 +623,7 @@ class SubmitPage extends StatelessWidget {
               Container(
                 height: 140,
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(.9),
                   borderRadius: BorderRadius.circular(12),
                 ),
