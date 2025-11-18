@@ -1,5 +1,7 @@
+// application_form.dart
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() => runApp(const App());
 
@@ -9,13 +11,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: false), // keep old material look
+      theme: ThemeData(useMaterial3: false),
       home: const PersonalInformationPage(),
     );
   }
 }
 
-// Personal Information Page
+// ------------------------------------------------------------
+// PERSONAL INFORMATION PAGE
+// ------------------------------------------------------------
 class PersonalInformationPage extends StatefulWidget {
   const PersonalInformationPage({super.key});
   @override
@@ -33,51 +37,48 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
       backgroundColor: const Color(0xFF022760),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFFD047),
-        title: const Text('Application Form – Personal Information',
+        title: const Text('Application Form – Personal Info',
             style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (_, c) => SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  SizedBox(height: c.maxHeight * .04),
-                  _roundedField('Contact Number*',
-                      keyboard: TextInputType.phone, onSaved: (v) {
-                    data['contactNumber'] = v;
-                  }),
-                  const SizedBox(height: 16),
-                  _roundedField('Civil Status*', onSaved: (v) {
-                    data['civilStatus'] = v;
-                  }),
-                  const SizedBox(height: 16),
-                  _roundedField('Nationality*', onSaved: (v) {
-                    data['nationality'] = v;
-                  }),
-                  const SizedBox(height: 16),
-                  _roundedField('Email Address*',
-                      keyboard: TextInputType.emailAddress, onSaved: (v) {
-                    data['emailAddress'] = v;
-                  }),
-                  const SizedBox(height: 16),
-                  _countryDropdown(),
-                  const SizedBox(height: 32),
-                  _nextButton(() {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => EducationalBackgroundPage(
-                                  applicationData: Map.from(data))));
-                    }
-                  }),
-                ],
-              ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _roundedField("Contact Number*", onSaved: (v) {
+                  data["contactNumber"] = v;
+                }, keyboard: TextInputType.phone),
+                const SizedBox(height: 16),
+                _roundedField("Civil Status*", onSaved: (v) {
+                  data["civilStatus"] = v;
+                }),
+                const SizedBox(height: 16),
+                _roundedField("Nationality*", onSaved: (v) {
+                  data["nationality"] = v;
+                }),
+                const SizedBox(height: 16),
+                _roundedField("Email Address*", onSaved: (v) {
+                  data["emailAddress"] = v;
+                }, keyboard: TextInputType.emailAddress),
+                const SizedBox(height: 16),
+                _countryDropdown(),
+                const SizedBox(height: 32),
+                _nextButton(() {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            EducationalBackgroundPage(applicationData: data),
+                      ),
+                    );
+                  }
+                }),
+              ],
             ),
           ),
         ),
@@ -88,22 +89,23 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   Widget _roundedField(String hint,
       {TextInputType? keyboard, required FormFieldSetter<String> onSaved}) {
     return TextFormField(
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xFFF5FCF9),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-        ),
-      ),
+      decoration: _inputDeco(hint),
       keyboardType: keyboard,
-      validator: (v) => v!.trim().isEmpty ? 'Required' : null,
+      validator: (v) => v!.isEmpty ? "Required" : null,
       onSaved: onSaved,
     );
   }
+
+  InputDecoration _inputDeco(String hint) => InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: const Color(0xFFF5FCF9),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: BorderSide.none),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      );
 
   Widget _countryDropdown() {
     return DropdownButtonFormField<String>(
@@ -111,37 +113,26 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: (_) {},
-      onSaved: (v) => data['country'] = v,
-      validator: (v) => v == null ? 'Required' : null,
-      decoration: const InputDecoration(
-        hintText: 'Country',
-        filled: true,
-        fillColor: Color(0xFFF5FCF9),
-        contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-        ),
-      ),
+      onSaved: (v) => data["country"] = v,
+      validator: (v) => v == null ? "Required" : null,
+      decoration: _inputDeco("Country"),
     );
   }
 
-  Widget _nextButton(VoidCallback onTap) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          elevation: 20,
-          backgroundColor: const Color(0xFFFFD047),
-          foregroundColor: const Color(0xFF022760),
-          shape: const StadiumBorder(),
+  Widget _nextButton(VoidCallback onTap) => SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFFD047),
+            foregroundColor: const Color(0xFF022760),
+            shape: const StadiumBorder(),
+            elevation: 20,
+          ),
+          child: const Text("NEXT"),
         ),
-        child: const Text('NEXT'),
-      ),
-    );
-  }
+      );
 
   final List<String> _countries = [
     'Bangladesh',
@@ -155,16 +146,20 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   ];
 }
 
-// Educational Background Page
+// ------------------------------------------------------------
+// EDUCATIONAL BACKGROUND PAGE
+// ------------------------------------------------------------
 class EducationalBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const EducationalBackgroundPage({super.key, required this.applicationData});
+
   @override
   State<EducationalBackgroundPage> createState() =>
       _EducationalBackgroundPageState();
 }
 
-class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
+class _EducationalBackgroundPageState
+    extends State<EducationalBackgroundPage> {
   final _formKey = GlobalKey<FormState>();
   late Map<String, dynamic> data;
 
@@ -177,43 +172,44 @@ class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
   @override
   Widget build(BuildContext context) {
     return _scaffold(
-        title: 'Educational Background',
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _field('Name of School*', onSaved: (v) => data['schoolName'] = v),
-              const SizedBox(height: 16),
-              _field('Year Level or Grade*',
-                  onSaved: (v) => data['yearLevel'] = v),
-              const SizedBox(height: 16),
-              _field('Cluster*', onSaved: (v) => data['cluster'] = v),
-              const SizedBox(height: 16),
-              _field('General Weighted Average*',
-                  keyboard: TextInputType.number,
-                  onSaved: (v) => data['gwa'] = v),
-              const SizedBox(height: 32),
-              _nextButton(() {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => FamilyBackgroundPage(
-                              applicationData: Map.from(data))));
-                }
-              }),
-            ],
-          ),
-        ));
+      title: "Educational Background",
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            _field("Name of School*", (v) => data["schoolName"] = v),
+            const SizedBox(height: 16),
+            _field("Year Level/Grade*", (v) => data["yearLevel"] = v),
+            const SizedBox(height: 16),
+            _field("Cluster*", (v) => data["cluster"] = v),
+            const SizedBox(height: 16),
+            _field("General Weighted Average*",
+                (v) => data["gwa"] = v,
+                keyboard: TextInputType.number),
+            const SizedBox(height: 32),
+            _nextButton(() {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          FamilyBackgroundPage(applicationData: data)),
+                );
+              }
+            })
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _field(String hint,
-      {TextInputType? keyboard, required FormFieldSetter<String> onSaved}) {
+  Widget _field(String hint, FormFieldSetter<String> onSaved,
+      {TextInputType? keyboard}) {
     return TextFormField(
       decoration: _inputDeco(hint),
       keyboardType: keyboard,
-      validator: (v) => v!.trim().isEmpty ? 'Required' : null,
+      validator: (v) => v!.isEmpty ? "Required" : null,
       onSaved: onSaved,
     );
   }
@@ -222,12 +218,11 @@ class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF5FCF9),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: BorderSide.none),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-        ),
       );
 
   Widget _nextButton(VoidCallback onTap) => SizedBox(
@@ -236,12 +231,12 @@ class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            elevation: 20,
             backgroundColor: const Color(0xFFFFD047),
             foregroundColor: const Color(0xFF022760),
             shape: const StadiumBorder(),
+            elevation: 20,
           ),
-          child: const Text('NEXT'),
+          child: const Text("NEXT"),
         ),
       );
 
@@ -249,21 +244,22 @@ class _EducationalBackgroundPageState extends State<EducationalBackgroundPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF022760),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD047),
         title: Text(title, style: const TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFFFD047),
         centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
-          child: body,
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
+            child: body),
       ),
     );
   }
 }
 
-// Family Background Page
+// ------------------------------------------------------------
+// FAMILY BACKGROUND PAGE
+// ------------------------------------------------------------
 class FamilyBackgroundPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FamilyBackgroundPage({super.key, required this.applicationData});
@@ -284,61 +280,61 @@ class _FamilyBackgroundPageState extends State<FamilyBackgroundPage> {
   @override
   Widget build(BuildContext context) {
     return _scaffold(
-        title: 'Family Background',
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _field("Father's Name*", (v) => data['fatherName'] = v),
-              const SizedBox(height: 16),
-              _field("Father's Occupation*", (v) => data['fatherOccupation'] = v),
-              const SizedBox(height: 16),
-              _field("Mother's Name*", (v) => data['motherName'] = v),
-              const SizedBox(height: 16),
-              _field("Mother's Occupation*", (v) => data['motherOccupation'] = v),
-              const SizedBox(height: 16),
-              _field('Number of siblings*',
-                  keyboard: TextInputType.number,
-                  (v) => data['siblingsCount'] = v),
-              const SizedBox(height: 16),
-              _field('Family Monthly Income*',
-                  keyboard: TextInputType.number,
-                  (v) => data['familyIncome'] = v),
-              const SizedBox(height: 32),
-              _nextButton(() {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => FinancialInformationPage(
-                              applicationData: Map.from(data))));
-                }
-              }),
-            ],
-          ),
-        ));
+      title: "Family Background",
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            _field("Father's Name*", (v) => data["fatherName"] = v),
+            const SizedBox(height: 16),
+            _field("Father's Occupation*", (v) => data["fatherOccupation"] = v),
+            const SizedBox(height: 16),
+            _field("Mother's Name*", (v) => data["motherName"] = v),
+            const SizedBox(height: 16),
+            _field("Mother's Occupation*", (v) => data["motherOccupation"] = v),
+            const SizedBox(height: 16),
+            _field("Number of Siblings*", (v) => data["siblingsCount"] = v,
+                keyboard: TextInputType.number),
+            const SizedBox(height: 16),
+            _field("Family Monthly Income*", (v) => data["familyIncome"] = v,
+                keyboard: TextInputType.number),
+            const SizedBox(height: 32),
+            _nextButton(() {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          FinancialInformationPage(applicationData: data)),
+                );
+              }
+            }),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _field(String hint, FormFieldSetter<String> onSaved,
-          {TextInputType? keyboard}) =>
-      TextFormField(
-        decoration: _inputDeco(hint),
-        keyboardType: keyboard,
-        validator: (v) => v!.trim().isEmpty ? 'Required' : null,
-        onSaved: onSaved,
-      );
+      {TextInputType? keyboard}) {
+    return TextFormField(
+      decoration: _inputDeco(hint),
+      keyboardType: keyboard,
+      validator: (v) => v!.isEmpty ? "Required" : null,
+      onSaved: onSaved,
+    );
+  }
 
   InputDecoration _inputDeco(String hint) => InputDecoration(
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF5FCF9),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: BorderSide.none),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-        ),
       );
 
   Widget _nextButton(VoidCallback onTap) => SizedBox(
@@ -347,12 +343,12 @@ class _FamilyBackgroundPageState extends State<FamilyBackgroundPage> {
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            elevation: 20,
             backgroundColor: const Color(0xFFFFD047),
             foregroundColor: const Color(0xFF022760),
             shape: const StadiumBorder(),
+            elevation: 20,
           ),
-          child: const Text('NEXT'),
+          child: const Text("NEXT"),
         ),
       );
 
@@ -360,21 +356,22 @@ class _FamilyBackgroundPageState extends State<FamilyBackgroundPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF022760),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD047),
         title: Text(title, style: const TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFFFD047),
         centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
-          child: body,
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
+            child: body),
       ),
     );
   }
 }
 
-// Financial Information Page
+// ------------------------------------------------------------
+// FINANCIAL INFORMATION PAGE
+// ------------------------------------------------------------
 class FinancialInformationPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const FinancialInformationPage({super.key, required this.applicationData});
@@ -396,35 +393,39 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
   @override
   Widget build(BuildContext context) {
     return _scaffold(
-        title: 'Financial Information',
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _field('Source of Financial Support*',
-                  (v) => data['financialSource'] = v),
-              const SizedBox(height: 16),
-              _field('Estimated Monthly Expenses*',
-                  keyboard: TextInputType.number,
-                  (v) => data['monthlyExpenses'] = v),
-              const SizedBox(height: 16),
-              _field('Reason for Needing Financial Assistance*',
-                  maxLines: 4,
-                  (v) => data['reason'] = v),
-              const SizedBox(height: 32),
-              _nextButton(() {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => AdditionalDocumentsPage(
-                              applicationData: Map.from(data))));
-                }
-              }),
-            ],
-          ),
-        ));
+      title: "Financial Information",
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            _field("Source of Financial Support*", (v) {
+              data["financialSource"] = v;
+            }),
+            const SizedBox(height: 16),
+            _field("Estimated Monthly Expenses*", (v) {
+              data["monthlyExpenses"] = v;
+            }, keyboard: TextInputType.number),
+            const SizedBox(height: 16),
+            _field("Reason for Needing Assistance*", (v) {
+              data["reason"] = v;
+            }, maxLines: 3),
+            const SizedBox(height: 32),
+            _nextButton(() {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        AdditionalDocumentsPage(applicationData: data),
+                  ),
+                );
+              }
+            }),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _field(String hint, FormFieldSetter<String> onSaved,
@@ -433,7 +434,7 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
       decoration: _inputDeco(hint),
       keyboardType: keyboard,
       maxLines: maxLines,
-      validator: (v) => v!.trim().isEmpty ? 'Required' : null,
+      validator: (v) => v!.isEmpty ? "Required" : null,
       onSaved: onSaved,
     );
   }
@@ -442,12 +443,11 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF5FCF9),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-        ),
       );
 
   Widget _nextButton(VoidCallback onTap) => SizedBox(
@@ -456,12 +456,12 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
         child: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            elevation: 20,
             backgroundColor: const Color(0xFFFFD047),
             foregroundColor: const Color(0xFF022760),
             shape: const StadiumBorder(),
+            elevation: 20,
           ),
-          child: const Text('NEXT'),
+          child: const Text("NEXT"),
         ),
       );
 
@@ -469,117 +469,49 @@ class _FinancialInformationPageState extends State<FinancialInformationPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF022760),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD047),
         title: Text(title, style: const TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFFFD047),
         centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
-          child: body,
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
+            child: body),
       ),
     );
   }
 }
 
-// Additional Documents Page
+// ------------------------------------------------------------
+// ADDITIONAL DOCUMENTS PAGE (UPDATED + FILE PICKER)
+// ------------------------------------------------------------
 class AdditionalDocumentsPage extends StatefulWidget {
   final Map<String, dynamic> applicationData;
   const AdditionalDocumentsPage({super.key, required this.applicationData});
+
   @override
   State<AdditionalDocumentsPage> createState() =>
       _AdditionalDocumentsPageState();
 }
 
 class _AdditionalDocumentsPageState extends State<AdditionalDocumentsPage> {
-  final Map<String, bool> docs = {
-    'Certificate of Enrolment or latest Report Card': false,
-    'Barangay Certificate of Indigency': false,
-    'Certificate of Good Moral Character': false,
-    'Birth Certificate (PSA copy)': false,
+  final Map<String, PlatformFile?> uploadedDocs = {
+    "Certificate of Enrolment / Report Card": null,
+    "Barangay Certificate of Indigency": null,
+    "Certificate of Good Moral Character": null,
+    "Birth Certificate (PSA)": null,
   };
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF022760),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD047),
-        title: const Text('Additional Documents',
-            style: TextStyle(color: Colors.black)),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
-          child: Column(
-            children: [
-              const Text(
-                'Please check the documents you will upload:',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              ...docs.keys.map((d) => CheckboxListTile(
-                    title: Text(d,
-                        style: const TextStyle(color: Colors.white70)),
-                    value: docs[d],
-                    onChanged: (v) => setState(() => docs[d] = v!),
-                    activeColor: const Color(0xFFFFD047),
-                    checkColor: const Color(0xFF022760),
-                  )),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final checked = docs.entries
-                        .where((e) => e.value)
-                        .map((e) => e.key)
-                        .toList();
-                    if (checked.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please select at least one')));
-                      return;
-                    }
-                    final Map<String, dynamic> finalData =
-                        Map.from(widget.applicationData);
-                    finalData['documents'] = checked;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => SubmitPage(applicationData: finalData)));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    elevation: 20,
-                    backgroundColor: const Color(0xFFFFD047),
-                    foregroundColor: const Color(0xFF022760),
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text('NEXT'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+  Future<void> pickFile(String key) async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
     );
-  }
-}
 
-// Submit Page
-class SubmitPage extends StatelessWidget {
-  final Map<String, dynamic> applicationData;
-  const SubmitPage({super.key, required this.applicationData});
-
-  Future<void> _submit(BuildContext context) async {
-    // TODO: upload / save logic here
-    // e.g. http.post(… body: applicationData …);
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Application submitted – thank you!')));
-    Navigator.popUntil(context, (route) => route.isFirst);
+    if (result != null) {
+      setState(() => uploadedDocs[key] = result.files.first);
+    }
   }
 
   @override
@@ -587,9 +519,9 @@ class SubmitPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF022760),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD047),
-        title: const Text('Review & Submit',
+        title: const Text("Additional Documents",
             style: TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFFFFD047),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -598,53 +530,177 @@ class SubmitPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '2x2 ID photo',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
+              const Text("Please upload the following documents:",
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
+              const SizedBox(height: 24),
+
+              // Upload Cards
+              ...uploadedDocs.keys.map((key) {
+                final file = uploadedDocs[key];
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => pickFile(key),
+                      child: Container(
+                        height: 130,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(.95),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.upload_file,
+                                size: 48, color: Color(0xFF022760)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    key,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    file == null
+                                        ? "Tap to upload"
+                                        : file.name,
+                                    style: TextStyle(
+                                        color: file == null
+                                            ? Colors.grey
+                                            : Colors.green.shade700,
+                                        fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }).toList(),
+
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final attached = uploadedDocs.values.where((f) => f != null);
+                    if (attached.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Please upload at least one document.")));
+                      return;
+                    }
+
+                    final data = Map.from(widget.applicationData);
+                    data["documents"] = uploadedDocs;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SubmitPage(applicationData: data),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD047),
+                    foregroundColor: const Color(0xFF022760),
+                    elevation: 20,
+                    shape: const StadiumBorder(),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text("NEXT"),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ------------------------------------------------------------
+// SUBMIT PAGE
+// ------------------------------------------------------------
+class SubmitPage extends StatelessWidget {
+  final Map<String, dynamic> applicationData;
+  const SubmitPage({super.key, required this.applicationData});
+
+  Future<void> _submit(BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Application submitted — thank you!")),
+    );
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF022760),
+      appBar: AppBar(
+        title: const Text("Review & Submit",
+            style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFFFD047),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("2x2 ID Photo",
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
               const SizedBox(height: 8),
               Container(
                 height: 140,
                 decoration: BoxDecoration(
-                  // ignore: deprecated_member_use
-                  color: Colors.white.withOpacity(.9),
                   borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withOpacity(.9),
                 ),
                 alignment: Alignment.center,
                 child: const Icon(Icons.add_a_photo,
                     size: 48, color: Color(0xFF022760)),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Proof of residency or valid ID',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
+              const SizedBox(height: 24),
+              const Text("Proof of Residency / Valid ID",
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
               const SizedBox(height: 8),
               Container(
                 height: 140,
                 decoration: BoxDecoration(
-                  // ignore: deprecated_member_use
-                  color: Colors.white.withOpacity(.9),
                   borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withOpacity(.9),
                 ),
                 alignment: Alignment.center,
                 child: const Icon(Icons.upload_file,
                     size: 48, color: Color(0xFF022760)),
               ),
               const SizedBox(height: 32),
-              Center(
+              SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => _submit(context),
                   style: ElevatedButton.styleFrom(
-                    elevation: 20,
-                    backgroundColor: const Color(0xFFFFD047),
-                    foregroundColor: const Color(0xFF022760),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: const StadiumBorder(),
-                  ),
-                  child: const Text('SUBMIT'),
+                      backgroundColor: const Color(0xFFFFD047),
+                      foregroundColor: const Color(0xFF022760),
+                      elevation: 20,
+                      shape: const StadiumBorder(),
+                      minimumSize: const Size(double.infinity, 50)),
+                  child: const Text("SUBMIT"),
                 ),
-              ),
+              )
             ],
           ),
         ),
