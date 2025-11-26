@@ -91,6 +91,7 @@ class _ScholarshipDetailsPageState extends State<ScholarshipDetailsPage> {
     : _requirementsCard(),
               ),
             ),
+            SizedBox(height: 20),
 
             // APPLY BUTTON
             Center(
