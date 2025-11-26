@@ -19,6 +19,31 @@ class _UpdateInformationState extends State<UpdateInformation> {
   // Gender selection
   String? _selectedGender;
 
+  // List of courses offered at OLOPSC
+  final List<String> _courses = [
+    "Bachelor of Science in Nursing (BSN)",
+    "Bachelor of Science in Information Technology (BSIT)",
+    "Bachelor of Science in Computer Science (BSCS)",
+    "Bachelor of Science in Business Administration (BSBA)",
+    "Bachelor of Science in Accountancy (BSA)",
+    "Bachelor of Science in Psychology (BSPsych)",
+    "Bachelor of Science in Biology (BSBio)",
+    "Bachelor of Science in Chemistry (BSChem)",
+    "Bachelor of Science in Mathematics (BSMath)",
+    "Bachelor of Science in Physics (BSPH)",
+    "Bachelor of Science in Marine Biology (BSMB)",
+    "Bachelor of Science in Environmental Science (BSES)",
+    "Bachelor of Science in Food Technology (BSFT)",
+    "Bachelor of Science in Hotel and Restaurant Management (BSHRM)",
+    "Bachelor of Science in Tourism Management (BSTM)",
+    "Bachelor of Science in Industrial Engineering (BSIE)",
+    "Bachelor of Science in Mechanical Engineering (BSME)",
+    "Bachelor of Science in Civil Engineering (BSCivE)",
+    "Bachelor of Science in Electrical Engineering (BSEE)",
+    "Bachelor of Science in Electronics Engineering (BSECE)",
+    "Bachelor of Science in Computer Engineering (BSCpE)",
+  ];
+
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -63,7 +88,7 @@ class _UpdateInformationState extends State<UpdateInformation> {
             children: [
               const Text(
                 "Update Your Information",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:  Color(0xFFFFD047)),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFFFD047)),
               ),
               const SizedBox(height: 24),
 
@@ -80,6 +105,7 @@ class _UpdateInformationState extends State<UpdateInformation> {
                 label: "Desired Course",
                 icon: Icons.menu_book,
                 controller: _courseCtrl,
+                autocompleteOptions: _courses,
               ),
               const SizedBox(height: 16),
 
@@ -150,6 +176,7 @@ class _UpdateInformationState extends State<UpdateInformation> {
     required String label,
     required IconData icon,
     required TextEditingController controller,
+    List<String>? autocompleteOptions,
     bool readOnly = false,
     VoidCallback? onTap,
   }) {
@@ -158,30 +185,68 @@ class _UpdateInformationState extends State<UpdateInformation> {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color:  Color(0xFFFFD047)),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFFFFD047)),
         ),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          readOnly: readOnly,
-          onTap: onTap,
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey),
+        if (autocompleteOptions != null)
+          Autocomplete<String>(
+            optionsBuilder: (TextEditingValue textEditingValue) {
+              if (textEditingValue.text == '') {
+                return const Iterable<String>.empty();
+              }
+              return autocompleteOptions.where((String option) {
+                return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+              });
+            },
+            onSelected: (String selection) {
+              controller.text = selection;
+            },
+            fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController, FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+              return TextFormField(
+                controller: fieldTextEditingController,
+                readOnly: readOnly,
+                onTap: onTap,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(icon, color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? "This field is required"
+                    : null,
+              );
+            },
+          )
+        else
+          TextFormField(
+            controller: controller,
+            readOnly: readOnly,
+            onTap: onTap,
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: Colors.grey),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[400]!),
+              ),
+              filled: true,
+              fillColor: Colors.white,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[400]!),
-            ),
-            filled: true,
-            fillColor: Colors.white,
+            validator: (v) => v == null || v.trim().isEmpty
+                ? "This field is required"
+                : null,
           ),
-          validator: (v) => v == null || v.trim().isEmpty
-              ? "This field is required"
-              : null,
-        ),
       ],
     );
   }
