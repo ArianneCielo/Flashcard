@@ -1,32 +1,208 @@
-import 'package:ask/view/update_information.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<void> main() async {
-  
-  //create .env first with PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-  //load .env file
-  await dotenv.load(fileName: ".env");
-  WidgetsFlutterBinding.ensureInitialized();
+class UpdateInformation extends StatefulWidget {
+  const UpdateInformation({Key? key}) : super(key: key);
 
-  await Supabase.initialize(
-    //use .env file values here
-    url: dotenv.env['PUBLIC_SUPABASE_URL']!,
-    anonKey: dotenv.env['PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY']!,
-  );
-  runApp(const ScholarshipApp());
+  @override
+  State<UpdateInformation> createState() => _UpdateInformationState();
 }
-class ScholarshipApp extends StatelessWidget {
-  const ScholarshipApp({super.key});
+
+class _UpdateInformationState extends State<UpdateInformation> {
+  final _formKey = GlobalKey<FormState>();
+
+  // Controllers
+  final _nameCtrl = TextEditingController();
+  final _courseCtrl = TextEditingController();
+  final _schoolCtrl = TextEditingController();
+  final _birthCtrl = TextEditingController();
+
+  // Gender selection
+  String? _selectedGender;
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _courseCtrl.dispose();
+    _schoolCtrl.dispose();
+    _birthCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      _birthCtrl.text = "${picked.month.toString().padLeft(2, '0')}/"
+          "${picked.day.toString().padLeft(2, '0')}/"
+          "${picked.year}";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(  backgroundColor: const Color(0xFF022760),
-        body: UpdateInformation()
+    return Scaffold(
+      backgroundColor: const Color(0xFF022760),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Update Your Information",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:  Color(0xFFFFD047)),
+              ),
+              const SizedBox(height: 24),
+
+              // Full Name
+              _labeledField(
+                label: "Full Name",
+                icon: Icons.person,
+                controller: _nameCtrl,
+              ),
+              const SizedBox(height: 16),
+
+              // Desired Course
+              _labeledField(
+                label: "Desired Course",
+                icon: Icons.menu_book,
+                controller: _courseCtrl,
+              ),
+              const SizedBox(height: 16),
+
+              // School
+              _labeledField(
+                label: "School",
+                icon: Icons.school,
+                controller: _schoolCtrl,
+              ),
+              const SizedBox(height: 16),
+
+              // Birthdate
+              _labeledField(
+                label: "Birthdate: (MM/DD/YYYY)",
+                icon: Icons.calendar_today,
+                controller: _birthCtrl,
+                readOnly: true,
+                onTap: _pickDate,
+              ),
+              const SizedBox(height: 16),
+
+              // Gender row with LGBTQ+ icon
+              const Text(
+                "Gender",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFFFFD047)),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _genderChip("Male", Icons.male),
+                  _genderChip("Female", Icons.female),
+                  _genderChip("LGBTQ+", Icons.transgender),
+                ],
+              ),
+              const SizedBox(height: 40),
+              // Save button
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // TODO: save logic
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Saved successfully")),
+                      );
+                    }
+                  },
+                  child: const Text("Save",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _labeledField({
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+    bool readOnly = false,
+    VoidCallback? onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color:  Color(0xFFFFD047)),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          readOnly: readOnly,
+          onTap: onTap,
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey[400]!),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          validator: (v) => v == null || v.trim().isEmpty
+              ? "This field is required"
+              : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _genderChip(String label, IconData icon, [bool fa = false]) {
+    final isSelected = _selectedGender == label;
+    return ChoiceChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isSelected ? Colors.white : Colors.black, size: 18),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
+        ],
+      ),
+      selected: isSelected,
+      onSelected: (val) => setState(() => _selectedGender = val ? label : null),
+      backgroundColor: Colors.grey[400],
+      selectedColor: Colors.blueAccent,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 }
