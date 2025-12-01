@@ -20,9 +20,13 @@ class AiSkolarApp extends StatelessWidget {
 class AiSkolarChat extends StatelessWidget {
   const AiSkolarChat({super.key});
 
+  // 1. KEY USED TO OPEN THE DRAWER ------------------------------------------
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key, // <-- attach the key
       backgroundColor: const Color(0xff022760),
       drawer: _buildDrawer(context),
       appBar: AppBar(
@@ -31,7 +35,8 @@ class AiSkolarChat extends StatelessWidget {
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => Scaffold.of(context).openDrawer(),
+          // 2. USE THE KEY INSTEAD OF Scaffold.of(context) -------------------
+          onPressed: () => _key.currentState?.openDrawer(),
         ),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
